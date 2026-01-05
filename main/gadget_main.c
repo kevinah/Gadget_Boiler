@@ -23,6 +23,9 @@ static void ch_serial();
 static esp_err_t init_tasks();
 static esp_err_t init_msg_queues();
 
+bool ap_init = false;
+bool sta_init = false;
+
 //FreeRTOS
 QueueHandle_t gadget_central_msg_queue;
 QueueHandle_t gadget_gpio_msg_queue;
@@ -69,6 +72,10 @@ static void ch_serial()
         break;
 
         case 's':
+            gadget_send_msg(gadget_central_msg_queue, GADGET_MSG_SHORT_DELAY, gadget_tag, gadget_main_id, gadget_msg_init_wifi_sta, &out_msg);
+        break;
+
+        case 'p':
             gadget_send_msg(gadget_central_msg_queue, GADGET_MSG_SHORT_DELAY, gadget_tag, gadget_main_id, gadget_msg_send_text, &out_msg);
         break;
 

@@ -12,6 +12,7 @@
 #include "gadget_includes.h"
 #include "gadget_comms.h"
 #include "gadget_ap.h"
+#include "gadget_sta.h"
 
 const static char *gadget_tag = "gadget_mk1_comms";
 
@@ -38,9 +39,13 @@ void gadget_comms_task(void *pvParams)
             switch(incoming_msg.msg_type)
             {
                 case gadget_msg_init_wifi_ap:
-                    ESP_LOGI(gadget_tag, "initializing ap sta");
+                    ESP_LOGI(gadget_tag, "initializing ap");
                     gadget_ap_init();
                     ap_init = start_ws();
+                break;
+                case gadget_msg_init_wifi_sta:
+                    ESP_LOGI(gadget_tag, "initializing sta");
+                    gadget_sta_init("", ""); // ** FILL
                 break;
                 
                 case gadget_msg_send_text:
@@ -48,6 +53,10 @@ void gadget_comms_task(void *pvParams)
                         gadget_send_text_ws("TEST");
                     else
                         ESP_LOGI(gadget_tag, "AP not initialized!");
+                break;
+
+                case gadget_msg_init_ping:
+                    ESP_LOGI(gadget_tag, "initializing ping");
                 break;
 
                 default:
