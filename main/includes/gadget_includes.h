@@ -44,7 +44,6 @@ typedef enum {
     gadget_msg_toggle_led_2,
     gadget_msg_init_wifi_ap,
     gadget_msg_init_wifi_sta,
-    gadget_msg_send_text,
     gadget_msg_init_ping
 } msg_type_t;
 

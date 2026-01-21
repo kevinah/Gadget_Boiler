@@ -60,7 +60,7 @@ void gadget_central_task(void *pvParams)
                 break;
 
                 case gadget_msg_init_ping:
-                    ESP_LOGI(gadget_tag, "Sending msg of send msg thru websocket");
+                    ESP_LOGI(gadget_tag, "Initializing ping!");
                     gadget_send_msg(gadget_comms_msg_queue, GADGET_MSG_SHORT_DELAY, gadget_tag, gadget_central_id, gadget_msg_init_ping, &incoming_msg);
                 break;
 

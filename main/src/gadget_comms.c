@@ -27,6 +27,8 @@ void gadget_comms_task(void *pvParams)
     static gadget_msg_t incoming_msg;
 
     static bool ap_init = false;
+    static bool sta_init = false;
+    static bool ping_init = false;
 
     ESP_LOGI(gadget_tag, "Launching gadget comms");
 
@@ -45,18 +47,23 @@ void gadget_comms_task(void *pvParams)
                 break;
                 case gadget_msg_init_wifi_sta:
                     ESP_LOGI(gadget_tag, "initializing sta");
-                    gadget_sta_init("", ""); // ** FILL
-                break;
-                
-                case gadget_msg_send_text:
-                    if(ap_init)
-                        gadget_send_text_ws("TEST");
+                    if(!sta_init)
+                        sta_init = gadget_sta_init("", ""); // ** FILL
                     else
-                        ESP_LOGI(gadget_tag, "AP not initialized!");
+                        ESP_LOGW(gadget_tag, "sta already initialized.");
                 break;
 
                 case gadget_msg_init_ping:
-                    ESP_LOGI(gadget_tag, "initializing ping");
+                    if(!ping_init)
+                    {
+                        ESP_LOGI(gadget_tag, "starting ping.");
+                        ping_init = gadget_init_ping();
+                    }
+                    else
+                    {
+                        ESP_LOGW(gadget_tag, "stopping ping.");
+                        ping_init = !gadget_stop_ping();
+                    }
                 break;
 
                 default:
