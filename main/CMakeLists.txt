@@ -10,6 +10,7 @@ set(GADGET_TASKS
 
 set(GADGET_SRC
     "./src/gadget_ap.c"
+    "./src/gadget_sta.c"
 )
 
 set(GADGET_COMPONENTS

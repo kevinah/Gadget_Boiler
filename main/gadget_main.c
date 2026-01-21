@@ -23,6 +23,9 @@ static void ch_serial();
 static esp_err_t init_tasks();
 static esp_err_t init_msg_queues();
 
+bool ap_init = false;
+bool sta_init = false;
+
 //FreeRTOS
 QueueHandle_t gadget_central_msg_queue;
 QueueHandle_t gadget_gpio_msg_queue;
@@ -53,7 +56,8 @@ static void ch_serial()
             ESP_LOGI(gadget_tag, "1 - Toggle LED 1");
             ESP_LOGI(gadget_tag, "2 - Toggle LED 2");
             ESP_LOGI(gadget_tag, "a - create wifi ap");
-            ESP_LOGI(gadget_tag, "s - (DEBUG) send ws msg thru ap");
+            ESP_LOGI(gadget_tag, "s - create wifi sta");
+            ESP_LOGI(gadget_tag, "p - ping");
         break;
 
         case '1':
@@ -69,7 +73,11 @@ static void ch_serial()
         break;
 
         case 's':
-            gadget_send_msg(gadget_central_msg_queue, GADGET_MSG_SHORT_DELAY, gadget_tag, gadget_main_id, gadget_msg_send_text, &out_msg);
+            gadget_send_msg(gadget_central_msg_queue, GADGET_MSG_SHORT_DELAY, gadget_tag, gadget_main_id, gadget_msg_init_wifi_sta, &out_msg);
+        break;
+
+        case 'p':
+            gadget_send_msg(gadget_central_msg_queue, GADGET_MSG_SHORT_DELAY, gadget_tag, gadget_main_id, gadget_msg_init_ping, &out_msg);
         break;
 
         default:
