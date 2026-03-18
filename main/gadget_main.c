@@ -197,12 +197,12 @@ void app_main(void)
 
 /**
  * @brief compile and offload msg
- * 
- * @param msg_queue 
- * @param ticks_wait 
- * @param sender 
- * @param msg_sender 
- * @param msg 
+ *
+ * @param msg_queue     target queue
+ * @param ticks_to_wait send timeout in ticks (0 = non-blocking)
+ * @param msg_sender    sender ID
+ * @param msg_type      message type
+ * @param msg           optional data payload, or NULL
  */
 BaseType_t gadget_send_msg(QueueHandle_t msg_queue,
                     TickType_t ticks_to_wait,

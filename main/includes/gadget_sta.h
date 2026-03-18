@@ -3,7 +3,7 @@
 
 bool gadget_sta_init(char *ssid, char *pwd);
 
-bool gadget_init_ping();
+bool gadget_init_ping(void);
 
 bool gadget_stop_ping();
 

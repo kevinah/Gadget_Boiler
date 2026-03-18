@@ -84,7 +84,7 @@ esp_netif_t *gadget_init_sta_interface(char *ssid, char *pwd)
     esp_err_t err = esp_wifi_set_config(WIFI_IF_STA, &wifi_sta_config);
     if(err != ESP_OK)
     {
-        
+        ESP_LOGE(gadget_tag, "esp_wifi_set_config ERROR: %s", esp_err_to_name(err));
     }
 
     ESP_LOGI(gadget_tag, "wifi_init_sta finished.");
@@ -248,7 +248,7 @@ static void ping_end(esp_ping_handle_t ping_hdl, void *args)
  * @return true 
  * @return false 
  */
-bool gadget_init_ping(char *url)
+bool gadget_init_ping(void)
 {
     if(!sta_init_in)
     {
@@ -265,7 +265,11 @@ bool gadget_init_ping(char *url)
     memset(&hint, 0x0, sizeof(hint));
 
     //retrieve IP address for URL
-    getaddrinfo("www.google.com", NULL, &hint, &res);
+    if(getaddrinfo("www.google.com", NULL, &hint, &res) != 0 || res == NULL)
+    {
+        ESP_LOGE(gadget_tag, "ERROR gadget_init_ping: DNS resolution failed");
+        return false;
+    }
     struct in_addr addr4 = ((struct sockaddr_in *) (res->ai_addr))->sin_addr;
     inet_addr_to_ip4addr(ip_2_ip4(&target_ip), &addr4);
     //free resulting address from getaddrinfo

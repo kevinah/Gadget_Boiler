@@ -9,7 +9,6 @@
 #include "esp_mac.h"
 #include "esp_wifi.h"
 #include "esp_event.h"
-#include "esp_log.h"
 #include "esp_netif_net_stack.h"
 #include "esp_netif.h"
 #include "nvs_flash.h"
@@ -140,7 +139,7 @@ void gadget_ap_init()
     ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_APSTA));
 
     ESP_LOGI(gadget_tag, "esp_wifi initializing ap");
-    esp_netif_t *gadget_netif_ap = gadget_ap_init_config();
+    gadget_ap_init_config();
 
     ESP_ERROR_CHECK(esp_wifi_start());
 }
