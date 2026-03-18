@@ -23,16 +23,10 @@ static void ch_serial();
 static esp_err_t init_tasks();
 static esp_err_t init_msg_queues();
 
-bool ap_init = false;
-bool sta_init = false;
-
 //FreeRTOS
 QueueHandle_t gadget_central_msg_queue;
 QueueHandle_t gadget_gpio_msg_queue;
 QueueHandle_t gadget_comms_msg_queue;
-
-//Variables
-int8_t tick_count = 0;
 
 /**
  * @brief check serial input 
@@ -41,7 +35,6 @@ int8_t tick_count = 0;
 static void ch_serial()
 {
     static char c;
-    gadget_msg_t out_msg;
 
     c = fgetc(stdin);
 
@@ -61,23 +54,23 @@ static void ch_serial()
         break;
 
         case '1':
-            gadget_send_msg(gadget_central_msg_queue, GADGET_MSG_SHORT_DELAY, gadget_tag, gadget_main_id, gadget_msg_toggle_led_1, &out_msg);
+            gadget_send_msg(gadget_central_msg_queue, 0, gadget_main_id, gadget_msg_toggle_led_1, NULL);
         break;
 
         case '2':
-            gadget_send_msg(gadget_central_msg_queue, GADGET_MSG_SHORT_DELAY, gadget_tag, gadget_main_id, gadget_msg_toggle_led_2, &out_msg);
+            gadget_send_msg(gadget_central_msg_queue, 0, gadget_main_id, gadget_msg_toggle_led_2, NULL);
         break;
 
         case 'a':
-            gadget_send_msg(gadget_central_msg_queue, GADGET_MSG_SHORT_DELAY, gadget_tag, gadget_main_id, gadget_msg_init_wifi_ap, &out_msg);
+            gadget_send_msg(gadget_central_msg_queue, 0, gadget_main_id, gadget_msg_init_wifi_ap, NULL);
         break;
 
         case 's':
-            gadget_send_msg(gadget_central_msg_queue, GADGET_MSG_SHORT_DELAY, gadget_tag, gadget_main_id, gadget_msg_init_wifi_sta, &out_msg);
+            gadget_send_msg(gadget_central_msg_queue, 0, gadget_main_id, gadget_msg_init_wifi_sta, NULL);
         break;
 
         case 'p':
-            gadget_send_msg(gadget_central_msg_queue, GADGET_MSG_SHORT_DELAY, gadget_tag, gadget_main_id, gadget_msg_init_ping, &out_msg);
+            gadget_send_msg(gadget_central_msg_queue, 0, gadget_main_id, gadget_msg_init_ping, NULL);
         break;
 
         default:
@@ -170,8 +163,6 @@ void app_main(void)
 
     esp_err_t run = ESP_OK;
 
-    gadget_msg_t out_msg;
-
     //Initialize NVS
     ESP_LOGI(gadget_tag, "-- INITIALIZING NVS --");
     run = nvs_flash_init();
@@ -190,7 +181,7 @@ void app_main(void)
 
 
     //Send off messages
-    gadget_send_msg(gadget_central_msg_queue, GADGET_MSG_SHORT_DELAY, gadget_tag, gadget_main_id, gadget_msg_init_gpio, &out_msg);
+    gadget_send_msg(gadget_central_msg_queue, 0, gadget_main_id, gadget_msg_init_gpio, NULL);
 
     while(run == ESP_OK)
     {
@@ -213,18 +204,21 @@ void app_main(void)
  * @param msg_sender 
  * @param msg 
  */
-BaseType_t gadget_send_msg(QueueHandle_t msg_queue, 
-                    TickType_t ticks_to_wait, 
-                    const char* sender, 
-                    msg_sender_t msg_sender, 
-                    msg_type_t msg_type, 
+BaseType_t gadget_send_msg(QueueHandle_t msg_queue,
+                    TickType_t ticks_to_wait,
+                    msg_sender_t msg_sender,
+                    msg_type_t msg_type,
                     gadget_msg_t *msg)
 {
-    //sender to logging
     BaseType_t xStatus;
-    msg->msg_sender = msg_sender;
-    msg->msg_type = msg_type;
-    xStatus = xQueueSendToBack(msg_queue, msg, ticks_to_wait);
+    gadget_msg_t out;
+    out.msg_sender = msg_sender;
+    out.msg_type = msg_type;
+    if (msg != NULL)
+        memcpy(out.data, msg->data, GADGET_MSG_DATA_SIZE);
+    else
+        memset(out.data, 0, GADGET_MSG_DATA_SIZE);
+    xStatus = xQueueSendToBack(msg_queue, &out, ticks_to_wait);
     if(xStatus != pdPASS)
     {
         ESP_LOGE("gadget_msg_sender", "msg queue (%d) FULL!", msg_sender);

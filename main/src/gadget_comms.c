@@ -48,7 +48,7 @@ void gadget_comms_task(void *pvParams)
                 case gadget_msg_init_wifi_sta:
                     ESP_LOGI(gadget_tag, "initializing sta");
                     if(!sta_init)
-                        sta_init = gadget_sta_init("", ""); // ** FILL
+                        sta_init = gadget_sta_init(CONFIG_GADGET_STA_SSID, CONFIG_GADGET_STA_PASSWORD);
                     else
                         ESP_LOGW(gadget_tag, "sta already initialized.");
                 break;

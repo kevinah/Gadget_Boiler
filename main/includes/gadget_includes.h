@@ -18,27 +18,24 @@
 #define GADGET_CENTRAL_Q_SIZE         10
 
 #define GADGET_GPIO_TASK_PRIORITY     1
-#define GADGET_GPIO_Q_SIZE            1
+#define GADGET_GPIO_Q_SIZE            4
 
 #define GADGET_COMMS_TASK_PRIORITY     4
-#define GADGET_COMMS_Q_SIZE            2
+#define GADGET_COMMS_Q_SIZE            4
 
 //FreeRTOS
 extern QueueHandle_t gadget_central_msg_queue;
 extern QueueHandle_t gadget_gpio_msg_queue;
 extern QueueHandle_t gadget_comms_msg_queue;
 
-extern bool ap_init;
-extern bool sta_init;
-
 //typedef & structs
-typedef enum {
+typedef enum __attribute__((packed)) {
     gadget_main_id,
     gadget_central_id,
     gadget_comms_id,
 } msg_sender_t;
 
-typedef enum {
+typedef enum __attribute__((packed)) {
     gadget_msg_init_gpio,
     gadget_msg_toggle_led_1,
     gadget_msg_toggle_led_2,
@@ -55,10 +52,9 @@ typedef struct {
 
 //functions
 BaseType_t gadget_send_msg(QueueHandle_t msg_queue,
-                    TickType_t ticks_to_wait, 
-                    const char* sender, 
-                    msg_sender_t msg_sender, 
-                    msg_type_t msg_type, 
+                    TickType_t ticks_to_wait,
+                    msg_sender_t msg_sender,
+                    msg_type_t msg_type,
                     gadget_msg_t *msg);
 
 
