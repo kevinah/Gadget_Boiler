@@ -1,3 +1,31 @@
 menu "Gadget Configurations"
-    
+
+    menu "WiFi AP"
+        config GADGET_AP_SSID
+            string "AP SSID"
+            default "gadget-ap-module"
+            help
+                SSID broadcast by the SoftAP network.
+
+        config GADGET_AP_PASSWORD
+            string "AP Password"
+            default ""
+            help
+                Password for the SoftAP network. Minimum 8 characters for WPA2.
+    endmenu
+
+    menu "WiFi STA"
+        config GADGET_STA_SSID
+            string "STA SSID"
+            default ""
+            help
+                SSID of the external network to connect to.
+
+        config GADGET_STA_PASSWORD
+            string "STA Password"
+            default ""
+            help
+                Password of the external network to connect to.
+    endmenu
+
 endmenu

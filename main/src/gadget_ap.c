@@ -23,8 +23,8 @@
 
 const static char *gadget_tag = "gadget_mk1_ap";
 
-#define GADGET_AP_SSID          "gadget-ap-module"
-#define GADGET_AP_PASSWORD      "SupremeDream9055"
+#define GADGET_AP_SSID          CONFIG_GADGET_AP_SSID
+#define GADGET_AP_PASSWORD      CONFIG_GADGET_AP_PASSWORD
 #define GADGET_AP_WIFI_CHANNEL  1
 #define GADGET_AP_MAX_CONN      1
 

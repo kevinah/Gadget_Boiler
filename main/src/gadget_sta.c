@@ -70,14 +70,16 @@ esp_netif_t *gadget_init_sta_interface(char *ssid, char *pwd)
 
     wifi_config_t wifi_sta_config = {
         .sta = {
-            .ssid = "mod1",
-            .password = "!Temp101",
             .scan_method = WIFI_ALL_CHANNEL_SCAN,
             .failure_retry_cnt = 5,
             .threshold.authmode = WIFI_AUTH_WPA2_PSK,
             .sae_pwe_h2e = WPA3_SAE_PWE_BOTH,
         },
     };
+
+    //Explicitly write each byte into the wifi_config_t's array field
+    strncpy((char *)wifi_sta_config.sta.ssid,     ssid, sizeof(wifi_sta_config.sta.ssid)     - 1);
+    strncpy((char *)wifi_sta_config.sta.password, pwd,  sizeof(wifi_sta_config.sta.password) - 1);
 
     esp_err_t err = esp_wifi_set_config(WIFI_IF_STA, &wifi_sta_config);
     if(err != ESP_OK)
