@@ -41,9 +41,14 @@ void gadget_comms_task(void *pvParams)
             switch(incoming_msg.msg_type)
             {
                 case gadget_msg_init_wifi_ap:
-                    ESP_LOGI(gadget_tag, "initializing ap");
-                    gadget_ap_init();
-                    ap_init = start_ws();
+                    if(!ap_init)
+                    {
+                        ESP_LOGI(gadget_tag, "initializing ap");
+                        gadget_ap_init();
+                        ap_init = start_ws();
+                    }
+                    else
+                        ESP_LOGW(gadget_tag, "ap already initialized.");
                 break;
                 case gadget_msg_init_wifi_sta:
                     ESP_LOGI(gadget_tag, "initializing sta");
