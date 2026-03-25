@@ -14,6 +14,7 @@
 #include "includes/gadget_central.h"
 #include "includes/gadget_gpio.h"
 #include "includes/gadget_comms.h"
+#include "includes/gadget_log.h"
 
 //Tag
 const static char *gadget_tag = "gadget_mk1_main";
@@ -51,6 +52,7 @@ static void ch_serial()
             ESP_LOGI(gadget_tag, "a - create wifi ap");
             ESP_LOGI(gadget_tag, "s - create wifi sta");
             ESP_LOGI(gadget_tag, "p - ping");
+            ESP_LOGI(gadget_tag, "l - offload logs");
         break;
 
         case '1':
@@ -71,6 +73,10 @@ static void ch_serial()
 
         case 'p':
             gadget_send_msg(gadget_central_msg_queue, 0, gadget_main_id, gadget_msg_init_ping, NULL);
+        break;
+
+        case 'l':
+            gadget_send_msg(gadget_central_msg_queue, 0, gadget_main_id, gadget_msg_log_offload, NULL);
         break;
 
         default:
@@ -172,12 +178,20 @@ void app_main(void)
     }
     if(run == ESP_OK) boot_seq = 1;
 
-    //init IO
-    run = init_msg_queues();
+    //Initialize offline logging
+    run = gadget_log_init();
+    if(run != ESP_OK) {
+        ESP_LOGE(gadget_tag, "gadget_log_init failed, continuing without flash logging");
+        run = ESP_OK; /* non-fatal */
+    }
     if(run == ESP_OK) boot_seq = 2;
 
-    run = init_tasks();
+    //init IO
+    run = init_msg_queues();
     if(run == ESP_OK) boot_seq = 3;
+
+    run = init_tasks();
+    if(run == ESP_OK) boot_seq = 4;
 
 
     //Send off messages

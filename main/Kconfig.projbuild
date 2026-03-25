@@ -28,4 +28,98 @@ menu "Gadget Configurations"
                 Password of the external network to connect to.
     endmenu
 
+    menu "Logging"
+
+        config GADGET_LOG_ENABLE
+            bool "Enable offline logging to LittleFS"
+            default y
+            help
+                When enabled, ESP_LOGx output is captured and written to LittleFS.
+
+        config GADGET_LOG_PARTITION_LABEL
+            string "LittleFS partition label"
+            default "gadget_logs"
+            depends on GADGET_LOG_ENABLE
+            help
+                Must match the Name field in gadget_partitions.csv.
+
+        config GADGET_LOG_MOUNT_POINT
+            string "LittleFS VFS mount point"
+            default "/gadget_logs"
+            depends on GADGET_LOG_ENABLE
+            help
+                VFS path where the LittleFS partition is mounted.
+
+        choice GADGET_LOG_WRITE_LEVEL
+            prompt "Minimum log level to write to flash"
+            default GADGET_LOG_WRITE_LEVEL_WARN
+            depends on GADGET_LOG_ENABLE
+            help
+                Log lines at this level and above are written to LittleFS.
+                Lines below this level are forwarded to UART only.
+
+            config GADGET_LOG_WRITE_LEVEL_ERROR
+                bool "ERROR only"
+            config GADGET_LOG_WRITE_LEVEL_WARN
+                bool "WARN and above"
+            config GADGET_LOG_WRITE_LEVEL_INFO
+                bool "INFO and above"
+            config GADGET_LOG_WRITE_LEVEL_DEBUG
+                bool "DEBUG and above"
+            config GADGET_LOG_WRITE_LEVEL_VERBOSE
+                bool "VERBOSE (all levels)"
+        endchoice
+
+        config GADGET_LOG_RING_BUF_SIZE
+            int "RAM ring buffer size (bytes)"
+            default 4096
+            range 512 8192
+            depends on GADGET_LOG_ENABLE
+            help
+                Size of the in-RAM circular buffer. Larger values reduce
+                partial loss under bursts but consume more heap.
+
+        config GADGET_LOG_MAX_LINE_LEN
+            int "Maximum formatted log line length (bytes)"
+            default 256
+            range 128 512
+            depends on GADGET_LOG_ENABLE
+            help
+                Stack-allocated buffer for vsnprintf in the hook. Lines longer
+                than this are truncated.
+
+        config GADGET_LOG_FLUSH_INTERVAL_MS
+            int "Flush timer interval (milliseconds)"
+            default 5000
+            range 1000 60000
+            depends on GADGET_LOG_ENABLE
+            help
+                How often the ring buffer is drained to LittleFS.
+
+        config GADGET_LOG_MAX_FILE_SIZE
+            int "Maximum log file size (bytes)"
+            default 65536
+            range 4096 524288
+            depends on GADGET_LOG_ENABLE
+            help
+                When the current file exceeds this size a new file is created.
+
+        config GADGET_LOG_MAX_FILES
+            int "Maximum number of log files (rolling)"
+            default 8
+            range 2 16
+            depends on GADGET_LOG_ENABLE
+            help
+                When this limit is reached the oldest file is overwritten.
+
+        config GADGET_LOG_OFFLOAD_URL
+            string "Cloud offload endpoint URL (stub)"
+            default "https://example.com/logs"
+            depends on GADGET_LOG_ENABLE
+            help
+                Target URL for the HTTPS POST offload stub. Replace with the
+                real endpoint when implementing actual offload.
+
+    endmenu
+
 endmenu

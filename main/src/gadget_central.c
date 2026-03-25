@@ -64,6 +64,11 @@ void gadget_central_task(void *pvParams)
                     gadget_send_msg(gadget_comms_msg_queue, 0, gadget_central_id, incoming_msg.msg_type, &incoming_msg);
                 break;
 
+                case gadget_msg_log_offload:
+                    ESP_LOGI(gadget_tag, "Forwarding log offload to comms");
+                    gadget_send_msg(gadget_comms_msg_queue, 0, gadget_central_id, incoming_msg.msg_type, &incoming_msg);
+                break;
+
                 default:
                     ESP_LOGW(gadget_tag, "UNKNOWN MESSAGE SENT TO CENTRAL %d", incoming_msg.msg_type);
                 break;

@@ -41,7 +41,8 @@ typedef enum __attribute__((packed)) {
     gadget_msg_toggle_led_2,
     gadget_msg_init_wifi_ap,
     gadget_msg_init_wifi_sta,
-    gadget_msg_init_ping
+    gadget_msg_init_ping,
+    gadget_msg_log_offload
 } msg_type_t;
 
 typedef struct {
