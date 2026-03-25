@@ -13,6 +13,7 @@
 #include "gadget_comms.h"
 #include "gadget_ap.h"
 #include "gadget_sta.h"
+#include "gadget_log.h"
 
 const static char *gadget_tag = "gadget_mk1_comms";
 
@@ -52,9 +53,10 @@ void gadget_comms_task(void *pvParams)
                 break;
                 case gadget_msg_init_wifi_sta:
                     ESP_LOGI(gadget_tag, "initializing sta");
-                    if(!sta_init)
+                    if(!sta_init) {
                         sta_init = gadget_sta_init(CONFIG_GADGET_STA_SSID, CONFIG_GADGET_STA_PASSWORD);
-                    else
+                        if(sta_init) gadget_log_sntp_sync();
+                    } else
                         ESP_LOGW(gadget_tag, "sta already initialized.");
                 break;
 
@@ -69,6 +71,11 @@ void gadget_comms_task(void *pvParams)
                         ESP_LOGW(gadget_tag, "stopping ping.");
                         ping_init = !gadget_stop_ping();
                     }
+                break;
+
+                case gadget_msg_log_offload:
+                    ESP_LOGI(gadget_tag, "offloading logs");
+                    gadget_log_offload();
                 break;
 
                 default:
